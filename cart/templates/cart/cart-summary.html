@@ -1,0 +1,80 @@
+{% include "store/base.html" %}
+
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<main class="pt-5">
+    <div class="container">
+      <h1 class="h5"> Shopping cart </h1>
+	    <hr>
+      {% for item in cart %}
+      {% with product=item.product %}
+      <br>
+      <div class="row mb-4 border product-item">
+        <div class="col-md-3 col-lg-2 order-md-first bg-light">
+            <img class="img-fluid mx-auto d-block" width="200px" alt="Responsive image" src="{{product.image.url}}">
+        </div>
+        <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+          <a href="{{product.get_absolute_url}}" class="text-info text-decoration-none">
+            <h1 class="h5 pt-2"> {{product.title}} </h1>
+          </a>
+          <div class="border">
+            <div class="col border-bottom">
+                <div class="row p-3">
+                <div class="col-6"> Product </div>
+                <div class="col-6 text-end"><span class="h6 fw-bold">$ {{product.price|mul:item.qty}} </span></div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="row p-3">
+                <div class="col-12">
+                  <!-- Update Form -->
+                  <form action="{% url 'cart_update' %}" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{product.id}}">
+                    <label for="select{{product.id}}">Qty</label>
+                    &nbsp; 
+                    <select name="product_quantity" id="select{{product.id}}">
+                      <option selected>{{item.qty}}</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
+                    &nbsp;
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      Update
+                    </button>
+                  </form>
+                  
+                  <!-- Delete Form -->
+                  <form action="{% url 'cart_delete' %}" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{product.id}}">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+
+    <div class="col-12 text-end">
+      <div class="h6 fw-bold"> Total price: $ <div id="total" class="d-inline-flex"> {{cart.get_total}} </div></div>
+      <br>
+      {% comment %} <a href="{% url 'checkout' %}" class="btn btn-primary my-2"> 
+        <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Proceed to checkout 
+      </a> {% endcomment %}
+    </div>
+  </div>
+  <br>
+  <br>
+</main>
+{% endblock %}
+
