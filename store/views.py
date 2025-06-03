@@ -1,13 +1,20 @@
 from django.shortcuts import render
 from .models import Product, Category
 from django.shortcuts import get_object_or_404
+from django.views.generic import ListView
+from .filters import ProductFilter
 
 # Create your views here.
-def home(request):
-
-    all_products = Product.objects.all()
-    context = {"products":all_products}
-    return render(request, 'store/store.html',context)
+def store(request):
+    products = Product.objects.all()
+    product_filter = ProductFilter(request.GET, queryset=products)
+    products = product_filter.qs
+    
+    context = {
+        'products': products,
+        'all_categories': Category.objects.all(),
+    }
+    return render(request, 'store/store.html', context)
 
 def categories(request):
 
